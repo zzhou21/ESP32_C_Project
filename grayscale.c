@@ -43,21 +43,34 @@ int process_rgb_to_gray(const char* hex_input, uint32_t width, uint32_t height, 
     return width * height;
 }
 
+WASM_EXPORT
+int apply_brightness(uint8_t* grayscale, size_t length, int16_t brightness_offset) {
+    for (size_t i = 0; i < length; i++) {
+        // cast to int for addition
+        int val = (int)grayscale[i] + (int)brightness_offset;
+        // clamp to [0, 255]
+        if (val < 0)   val = 0;
+        if (val > 255) val = 255;
+        grayscale[i] = (uint8_t)val;
+    }
+    return (int)length;
+}
+
 //entry point
 int main() {
-    const char *dummy_hex = "ff0000";
-    uint8_t gray_output;
+    const char *dummy_hex = "FF0000"; 
+    uint8_t gray_output[1];          
 
-    printf("testing...\n");
-
-    int ret = process_rgb_to_gray(dummy_hex, 1, 1, &gray_output);
-
+    printf("Testing grayscale + brightness in C...\n");
+    int ret = process_rgb_to_gray(dummy_hex, 1, 1, gray_output);
     if (ret < 0) {
-        printf("failed with error code: %d\n", ret);
-    } else {
-        printf("successful. processed %d pixel(s).\n", ret);
-        printf("gray value of the pixel: %d\n", gray_output);
+        printf("process_rgb_to_gray failed: %d\n", ret);
+        return -1;
     }
-    
+    printf("Grayscale value: %d\n", gray_output[0]);
+
+    apply_brightness(gray_output, 1, 50);
+    printf("After brightness +50: %d\n", gray_output[0]);
+
     return 0;
 }
