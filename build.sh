@@ -4,7 +4,7 @@ echo "Build wasm app .."
 /opt/wasi-sdk/bin/clang \
     --target=wasm32-wasi \
     -O3 \
-    -z stack-size=256 \
+    -z stack-size=4096 \
     -Wl,--initial-memory=65536 \
     -o grayscale.wasm grayscale.c \
     -Wl,--export=main \
@@ -14,6 +14,6 @@ echo "Build wasm app .."
     -Wl,--strip-all \
     -Wl,--no-entry \
     -Wl,--allow-undefined \
-    //-nostdlib
+    #-nostdlib
 
 echo "Done"
